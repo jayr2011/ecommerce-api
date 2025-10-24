@@ -25,74 +25,149 @@
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
-## Project setup
+## ecommerce-api
+
+API backend para um projeto de ecommerce construído com NestJS, TypeScript e Prisma.
+
+Este repositório contém a API (endpoints, autenticação JWT, modelos Prisma e migrações) usada como base para aprender e construir aplicações backend modernas.
+
+### Principais tecnologias
+
+- NestJS (v11)
+- TypeScript
+- Prisma (Client + Migrate)
+- PostgreSQL (via Docker Compose)
+- Jest (testes)
+
+---
+
+## Requisitos
+
+- Node.js >= 18
+- npm (ou pnpm/yarn)
+- Docker & Docker Compose (recomendado para banco de dados local)
+
+---
+
+## Rodando localmente (com Docker)
+
+1. Copie o arquivo de exemplo de variáveis de ambiente e edite conforme necessário:
 
 ```bash
-$ npm install
+cp .env.example .env
 ```
 
-## Compile and run the project
+2. Suba os serviços (Postgres) com Docker Compose:
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+docker compose up -d
 ```
 
-## Run tests
+3. Instale dependências:
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+npm install
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+4. Rode as migrações do Prisma e gere o client:
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+npx prisma migrate dev --name init
+npx prisma generate
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+5. Inicie a aplicação em modo de desenvolvimento:
 
-## Resources
+```bash
+npm run start:dev
+```
 
-Check out a few resources that may come in handy when working with NestJS:
+Agora a API deve estar disponível em http://localhost:3000 (por padrão).
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+---
 
-## Support
+## Rodando sem Docker (apenas local)
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+- Configure um servidor PostgreSQL local e atualize a variável `DATABASE_URL` no `.env`.
+- Repita os passos 3 e 4 da seção anterior.
 
-## Stay in touch
+---
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+## Scripts úteis
 
-## License
+- npm run start:dev — inicia o servidor em modo watch
+- npm run start — inicia a aplicação (produção via Nest)
+- npm run build — compila TypeScript para `dist/`
+- npm run lint — roda eslint e tenta corrigir problemas
+- npm run test — roda testes unitários
+- npm run test:e2e — roda testes E2E
+- npm run test:cov — gera relatório de coverage
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+---
+
+## Prisma — modelagem e migrações
+
+- Arquivo de schema: `prisma/schema.prisma`
+- Migrações ficam em: `prisma/migrations/`
+
+Para criar uma nova migração após alterar o schema:
+
+```bash
+npx prisma migrate dev --name descricao_da_mudanca
+npx prisma generate
+```
+
+Para rodar migrações em um ambiente de produção use `prisma migrate deploy`.
+
+---
+
+## Testes
+
+Unitários e E2E são executados via Jest. Exemplo:
+
+```bash
+npm run test
+npm run test:e2e
+```
+
+---
+
+## Estrutura do projeto (resumo)
+
+- `src/` — código fonte da aplicação
+  - `main.ts` — bootstrap do Nest
+  - `app.module.ts` — módulo raiz
+  - controllers, services, modules específicos do domínio
+- `prisma/` — schema e migrações do Prisma
+- `test/` — testes e2e
+
+---
+
+## Contribuição
+
+Contribuições são bem-vindas. Passos sugeridos:
+
+1. Fork do projeto
+2. Crie uma branch com a feature ou fix: `git checkout -b feat/minha-feature`
+3. Faça commits pequenos e claros
+4. Abra um Pull Request para `main`
+
+Adicione testes para bugs/funções novas quando possível.
+
+---
+
+## Observações e dicas
+
+- Mantenha o arquivo `.env` fora do repositório (não commitar credenciais).
+- Use `npx prisma studio` para inspecionar dados localmente.
+- Ative logs e níveis de debug via `@nestjs/config` quando precisar depurar.
+
+---
+
+## Contato
+
+Se quiser trocar ideias ou reportar algo, abra uma issue neste repositório ou me envie uma mensagem.
+
+---
+
+README gerado automaticamente — ajuste conforme necessidades específicas do projeto.
