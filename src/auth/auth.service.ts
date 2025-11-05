@@ -36,7 +36,7 @@ export class AuthService {
   private sign(user: any) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
     const payload = { sub: user.id, email: user.email, role: user.role };
-    const acess_token = this.jwt.sign(payload, { expiresIn: '1d' });
-    return { acess_token };
+    const access_token = this.jwt.sign(payload, { expiresIn: '1d' });
+    return { access_token };
   }
 }
