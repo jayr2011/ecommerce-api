@@ -13,6 +13,7 @@ type Mutation {
 }
 
 type Query {
+  allUsers: [UserOutput!]!
   health: String!
 }
 
@@ -20,4 +21,10 @@ input RegisterInput {
   email: String!
   name: String!
   password: String!
+}
+
+type UserOutput {
+  email: String!
+  id: String!
+  name: String!
 }
