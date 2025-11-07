@@ -1,4 +1,57 @@
-import { Controller } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  Patch,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
+import { ProductsService } from './products.service';
+import { CreateProductDto } from './dto/created-product.dto';
+import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
+import { take } from 'rxjs';
 
 @Controller('products')
-export class ProductsController {}
+export class ProductsController {
+  constructor(private productsService: ProductsService) {}
+
+  @Get()
+  list(
+    @Query('q') q?: string,
+    @Query('category') category?: string,
+    @Query('skip') skip?: number,
+  ) {
+    return this.productsService.list({
+      q,
+      category,
+      skip: Number(skip) || 0,
+      take: Number(take),
+    });
+  }
+
+  @Get(':slug')
+  bySlug(@Param('slug') slug: string) {
+    return this.productsService.bySlug(slug);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post()
+  create(@Body() dto: CreateProductDto) {
+    return this.productsService.create(dto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() dto: Partial<CreateProductDto>) {
+    return this.productsService.update(id, dto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete(':id')
+  delete(@Param('id') id: string) {
+    return this.productsService.delete(id);
+  }
+}
