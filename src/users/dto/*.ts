@@ -9,4 +9,10 @@ export class UserDto {
   @IsEmail()
   @IsNotEmpty()
   email: string;
+  @IsString()
+  @IsNotEmpty()
+  role: string;
+  @IsNotEmpty()
+  @IsNotEmpty()
+  createdAt: Date;
 }

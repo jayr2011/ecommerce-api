@@ -10,4 +10,10 @@ export class UserOutput {
 
   @Field()
   email: string;
+
+  @Field()
+  role: string;
+
+  @Field()
+  createdAt: Date;
 }
