@@ -72,6 +72,7 @@ export class UsersService {
       name: deleted.name,
       email: deleted.email,
       role: deleted.role,
+      createdAt: deleted.createdAt,
     };
   }
 }
