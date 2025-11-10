@@ -14,7 +14,7 @@ import { CreateProductDto } from './dto/created-product.dto';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/common/guards/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decoretor';
-import { take } from 'rxjs';
+import { ProductSort } from './dto/list-product.dto';
 
 @Controller('products')
 export class ProductsController {
@@ -25,12 +25,19 @@ export class ProductsController {
     @Query('q') q?: string,
     @Query('category') category?: string,
     @Query('skip') skip?: number,
+    @Query('take') take?: number,
+    @Query('sort') sort?: ProductSort,
+    @Query('min') min?: number,
+    @Query('max') max?: number,
   ) {
     return this.productsService.list({
       q,
       category,
       skip: Number(skip) || 0,
       take: Number(take),
+      sort: sort,
+      min: min,
+      max: max,
     });
   }
 

@@ -10,8 +10,8 @@ export enum ProductSort {
 
 export class ListProductsQuery {
   @IsOptional() @IsString() q?: string;
-  @IsOptional() @IsString() category?: string; // slug da categoria
-  @IsOptional() @Type(() => Number) @IsInt() @Min(0) min?: number; // em cents
+  @IsOptional() @IsString() category?: string;
+  @IsOptional() @Type(() => Number) @IsInt() @Min(0) min?: number;
   @IsOptional() @Type(() => Number) @IsInt() @Min(0) max?: number;
   @IsOptional() @Type(() => Number) @IsInt() @Min(0) skip?: number;
   @IsOptional() @Type(() => Number) @IsInt() @Min(1) take?: number = 20;

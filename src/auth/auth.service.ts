@@ -3,6 +3,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { RegisterDto, LoginDto } from './dto/*';
+import { JwtPayloadUser } from 'src/types/auth.types';
 
 @Injectable()
 export class AuthService {
@@ -33,8 +34,7 @@ export class AuthService {
     return this.sign(user);
   }
 
-  private sign(user: any) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+  private sign(user: JwtPayloadUser) {
     const payload = { sub: user.id, email: user.email, role: user.role };
     const access_token = this.jwt.sign(payload, { expiresIn: '1d' });
     return { access_token };

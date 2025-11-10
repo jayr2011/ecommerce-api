@@ -11,3 +11,9 @@ export interface JwtPayload {
 export interface RequestWithUser extends Request {
   user?: JwtPayload;
 }
+
+export interface JwtPayloadUser {
+  id: string;
+  email: string;
+  role: string;
+}
