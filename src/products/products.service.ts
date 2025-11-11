@@ -3,7 +3,13 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateProductDto } from './dto/created-product.dto';
 import { ProductSort, ListProductsQuery } from './dto/list-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import type { Prisma } from '@prisma/client';
+import {
+  ProductDto,
+  CategoryDto,
+  ProductVariantDto,
+  PaginatedProductsDto,
+} from './dto/product.dto';
+import type { Prisma, Product, Category, ProductVariant } from '@prisma/client';
 
 @Injectable()
 export class ProductsService {
@@ -11,7 +17,45 @@ export class ProductsService {
 
   constructor(private prisma: PrismaService) {}
 
-  async list(qs: ListProductsQuery) {
+  private mapProductToDto(
+    product: Product & {
+      category?: Category | null;
+      variants?: ProductVariant[];
+    },
+  ): ProductDto {
+    return {
+      id: product.id,
+      title: product.title,
+      description: product.description || undefined,
+      priceCents: product.priceCents,
+      active: product.active,
+      categoryId: product.categoryId || undefined,
+      category: product.category
+        ? this.mapCategoryToDto(product.category)
+        : undefined,
+      variants: product.variants
+        ? product.variants.map((v) => this.mapVariantToDto(v))
+        : undefined,
+    };
+  }
+
+  private mapCategoryToDto(category: Category): CategoryDto {
+    return {
+      id: category.id,
+      name: category.name,
+      slug: category.slug,
+    };
+  }
+
+  private mapVariantToDto(variant: ProductVariant): ProductVariantDto {
+    return {
+      id: variant.id,
+      sku: variant.sku,
+      stock: variant.stock,
+    };
+  }
+
+  async list(qs: ListProductsQuery): Promise<PaginatedProductsDto> {
     const {
       q,
       category,
@@ -65,28 +109,35 @@ export class ProductsService {
 
     this.logger.log(`list() returned ${items.length} items (total=${total})`);
 
-    return { items, total, skip, take };
+    return {
+      items: items.map((item) => this.mapProductToDto(item)),
+      total,
+      skip,
+      take,
+    };
   }
 
-  bySlug(slug: string) {
+  async bySlug(slug: string): Promise<ProductDto | null> {
     this.logger.log(`bySlug() called — slug=${slug}`);
 
-    return this.prisma.product.findUnique({
+    const product = await this.prisma.product.findUnique({
       where: { slug },
       include: { variants: true, category: true },
     });
+
+    return product ? this.mapProductToDto(product) : null;
   }
 
-  async create(dto: CreateProductDto) {
+  async create(dto: CreateProductDto): Promise<ProductDto> {
     this.logger.log(`create() called — title=${dto.title}`);
 
     const created = await this.prisma.product.create({ data: dto });
 
     this.logger.log(`create() success — id=${created.id}`);
-    return created;
+    return this.mapProductToDto(created);
   }
 
-  async update(id: string, dto: UpdateProductDto) {
+  async update(id: string, dto: UpdateProductDto): Promise<ProductDto> {
     this.logger.log(`update() called — id=${id}`);
 
     const exists = await this.prisma.product.findUnique({ where: { id } });
@@ -98,14 +149,29 @@ export class ProductsService {
     const updated = await this.prisma.product.update({
       where: { id },
       data: dto,
+      include: { category: true, variants: true },
     });
     this.logger.log(`update() success — id=${updated.id}`);
-    return updated;
+    return this.mapProductToDto(updated);
   }
 
-  delete(id: string) {
+  async delete(id: string): Promise<ProductDto> {
     this.logger.log(`delete() called — id=${id}`);
 
-    return this.prisma.product.delete({ where: { id } });
+    const exists = await this.prisma.product.findUnique({
+      where: { id },
+      include: { category: true, variants: true },
+    });
+    if (!exists) {
+      throw new NotFoundException('Product not found');
+    }
+
+    const deleted = await this.prisma.product.delete({ where: { id } });
+    this.logger.log(`delete() success — id=${deleted.id}`);
+    return this.mapProductToDto({
+      ...deleted,
+      category: exists.category,
+      variants: exists.variants,
+    });
   }
 }
