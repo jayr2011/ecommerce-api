@@ -1,17 +1,26 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
+import { UserDto, UserUpdateDto } from './dto/*';
 
 describe('UsersController', () => {
   let controller: UsersController;
 
-  const mockUsers = [
-    { id: 1, name: 'User One', email: 'one@example.com' },
-    { id: 2, name: 'User Two', email: 'two@example.com' },
-  ];
+  const mockUser: UserDto = {
+    id: '1',
+    name: 'User One',
+    email: 'one@example.com',
+    role: 'ADMIN',
+    createdAt: new Date(),
+  };
+
+  const mockUsers: UserDto[] = [mockUser];
 
   const mockUsersService = {
     getUsers: jest.fn().mockResolvedValue(mockUsers),
+    getUserById: jest.fn().mockResolvedValue(mockUser),
+    updateUser: jest.fn().mockResolvedValue(mockUser),
+    deleteUser: jest.fn().mockResolvedValue(mockUser),
   };
 
   beforeEach(async () => {
@@ -31,18 +40,76 @@ describe('UsersController', () => {
     expect(controller).toBeDefined();
   });
 
-  it('getUsers calls usersService.getUsers', async () => {
-    await controller.getUsers();
-    expect(mockUsersService.getUsers).toHaveBeenCalled();
+  describe('getUsers', () => {
+    it('should call usersService.getUsers', async () => {
+      await controller.getUsers();
+      expect(mockUsersService.getUsers).toHaveBeenCalled();
+    });
+
+    it('should return users array', async () => {
+      const users = await controller.getUsers();
+      expect(users).toEqual(mockUsers);
+    });
+
+    it('should propagate errors from service', async () => {
+      mockUsersService.getUsers.mockRejectedValueOnce(new Error('fail'));
+      await expect(controller.getUsers()).rejects.toThrow('fail');
+    });
   });
 
-  it('getUsers returns users array', async () => {
-    const users = await controller.getUsers();
-    expect(users).toEqual(mockUsers);
+  describe('getUserById', () => {
+    it('should call usersService.getUserById with correct id', async () => {
+      await controller.getUserById('1');
+      expect(mockUsersService.getUserById).toHaveBeenCalledWith('1');
+    });
+
+    it('should return user by id', async () => {
+      const user = await controller.getUserById('1');
+      expect(user).toEqual(mockUser);
+    });
+
+    it('should propagate errors from service', async () => {
+      mockUsersService.getUserById.mockRejectedValueOnce(new Error('fail'));
+      await expect(controller.getUserById('1')).rejects.toThrow('fail');
+    });
   });
 
-  it('getUsers propagates errors from service', async () => {
-    mockUsersService.getUsers.mockRejectedValueOnce(new Error('fail'));
-    await expect(controller.getUsers()).rejects.toThrow('fail');
+  describe('updateUser', () => {
+    it('should call usersService.updateUser with correct id and dto', async () => {
+      const updateDto: UserUpdateDto = { name: 'Updated Name' };
+      await controller.updateUser('1', updateDto);
+      expect(mockUsersService.updateUser).toHaveBeenCalledWith('1', updateDto);
+    });
+
+    it('should return updated user', async () => {
+      const updateDto: UserUpdateDto = { name: 'Updated Name' };
+      const result = await controller.updateUser('1', updateDto);
+      expect(result).toEqual(mockUser);
+    });
+
+    it('should propagate errors from service', async () => {
+      const updateDto: UserUpdateDto = { name: 'Updated Name' };
+      mockUsersService.updateUser.mockRejectedValueOnce(new Error('fail'));
+      await expect(controller.updateUser('1', updateDto)).rejects.toThrow(
+        'fail',
+      );
+    });
+  });
+
+  describe('deleteUser', () => {
+    it('should call usersService.deleteUser with correct id', async () => {
+      await controller.deleteUser('1');
+      expect(mockUsersService.deleteUser).toHaveBeenCalledWith('1');
+    });
+
+    it('should return deleted user', async () => {
+      const result = await controller.deleteUser('1');
+      expect(result).toEqual(mockUser);
+    });
+
+    it('should propagate errors from service', async () => {
+      mockUsersService.deleteUser.mockRejectedValueOnce(new Error('fail'));
+      await expect(controller.deleteUser('1')).rejects.toThrow('fail');
+    });
   });
 });
