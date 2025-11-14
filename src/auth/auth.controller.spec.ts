@@ -32,7 +32,12 @@ describe('AuthController', () => {
         password: 'password123',
         name: 'Test User',
       };
-      const expectedResult = { access_token: 'token123' };
+      const expectedResult = {
+        access_token: 'token123',
+        refresh_token: 'refresh-token-123',
+        token_type: 'Bearer',
+        expires_in: 900,
+      };
 
       jest.spyOn(authService, 'register').mockResolvedValue(expectedResult);
 
@@ -48,7 +53,12 @@ describe('AuthController', () => {
         password: 'password123',
         name: 'Test User',
       };
-      const expectedResult = { access_token: 'token123' };
+      const expectedResult = {
+        access_token: 'token123',
+        refresh_token: 'refresh-token-123',
+        token_type: 'Bearer',
+        expires_in: 900,
+      };
 
       jest.spyOn(authService, 'register').mockResolvedValue(expectedResult);
 
@@ -64,7 +74,12 @@ describe('AuthController', () => {
         email: 'test@example.com',
         password: 'password123',
       };
-      const expectedResult = { access_token: 'token123' };
+      const expectedResult = {
+        access_token: 'token123',
+        refresh_token: 'refresh-token-123',
+        token_type: 'Bearer',
+        expires_in: 900,
+      };
 
       jest.spyOn(authService, 'login').mockResolvedValue(expectedResult);
 
@@ -79,7 +94,12 @@ describe('AuthController', () => {
         email: 'test@example.com',
         password: 'password123',
       };
-      const expectedResult = { access_token: 'token123' };
+      const expectedResult = {
+        access_token: 'token123',
+        refresh_token: 'refresh-token-123',
+        token_type: 'Bearer',
+        expires_in: 900,
+      };
 
       jest.spyOn(authService, 'login').mockResolvedValue(expectedResult);
 

@@ -3,12 +3,19 @@ import { AuthResolver } from './auth.resolver';
 import { AuthService } from '../auth.service';
 import { RegisterInput } from '../inputs/register.input';
 import { LoginInput } from '../inputs/login.input';
+import { RefreshInput } from '../inputs/refresh.input';
 
 const mockAuthService = {
   register: jest
     .fn()
     .mockResolvedValue({ access_token: 'mocked-register-token' }),
   login: jest.fn().mockResolvedValue({ access_token: 'mocked-login-token' }),
+  refresh: jest.fn().mockResolvedValue({
+    access_token: 'new-access-token',
+    refresh_token: 'new-refresh-token',
+    token_type: 'Bearer',
+    expires_in: 900,
+  }),
 };
 
 describe('AuthResolver', () => {
@@ -42,7 +49,7 @@ describe('AuthResolver', () => {
   it('register returns access_token', async () => {
     const input = { email: 'a@b.com', password: 'secret' } as RegisterInput;
     const result = await resolver.register(input);
-    expect(result).toBe('mocked-register-token');
+    expect(result.access_token).toBe('mocked-register-token');
   });
 
   it('login calls authService.login with input', async () => {
@@ -54,6 +61,25 @@ describe('AuthResolver', () => {
   it('login returns access_token', async () => {
     const input = { email: 'a@b.com', password: 'secret' } as LoginInput;
     const result = await resolver.login(input);
-    expect(result).toBe('mocked-login-token');
+    expect(result.access_token).toBe('mocked-login-token');
+  });
+
+  it('refresh calls authService.refresh with input', async () => {
+    const input = { refreshToken: 'refresh-token-123' };
+    await resolver.refresh(input);
+    expect(mockAuthService.refresh).toHaveBeenCalledWith(input);
+  });
+
+  it('refresh returns tokens', async () => {
+    const input = { refreshToken: 'refresh-token-123' };
+    const mockTokens = {
+      access_token: 'new-access-token',
+      refresh_token: 'new-refresh-token',
+      token_type: 'Bearer',
+      expires_in: 900,
+    };
+    mockAuthService.refresh.mockResolvedValue(mockTokens);
+    const result = await resolver.refresh(input);
+    expect(result).toEqual(mockTokens);
   });
 });

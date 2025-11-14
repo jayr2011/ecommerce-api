@@ -9,11 +9,25 @@ jest.mock('bcrypt', () => ({ hash: jest.fn(), compare: jest.fn() }));
 
 describe('AuthService', () => {
   let service: AuthService;
-  let prisma: { user: { findUnique: jest.Mock; create: jest.Mock } };
+  let prisma: {
+    user: { findUnique: jest.Mock; create: jest.Mock };
+    refreshToken: {
+      create: jest.Mock;
+      findUnique: jest.Mock;
+      deleteMany: jest.Mock;
+    };
+  };
   let jwt: { sign: jest.Mock };
 
   beforeEach(async () => {
-    prisma = { user: { findUnique: jest.fn(), create: jest.fn() } };
+    prisma = {
+      user: { findUnique: jest.fn(), create: jest.fn() },
+      refreshToken: {
+        create: jest.fn(),
+        findUnique: jest.fn(),
+        deleteMany: jest.fn(),
+      },
+    };
     jwt = { sign: jest.fn() };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -90,7 +104,7 @@ describe('AuthService', () => {
     prisma.user.create.mockResolvedValue({
       id: 1,
       email: 'a@b.com',
-      role: 'USER',
+      role: 'ADMIN',
     });
     (bcrypt.hash as jest.Mock).mockResolvedValue('hashed');
     jwt.sign.mockReturnValue('token');
@@ -104,7 +118,7 @@ describe('AuthService', () => {
         name: 'A',
         email: 'a@b.com',
         passwordHash: 'hashed',
-        role: 'USER',
+        role: 'ADMIN',
       },
     });
   });
@@ -236,7 +250,7 @@ describe('AuthService', () => {
     await service.login({ email: 'x@y.com', password: 'pass' });
     expect(jwt.sign).toHaveBeenCalledWith(
       { sub: 2, email: 'x@y.com', role: 'ADMIN' },
-      { expiresIn: '1d' },
+      { expiresIn: '15m' },
     );
   });
 
@@ -256,7 +270,7 @@ describe('AuthService', () => {
     });
     expect(jwt.sign).toHaveBeenCalledWith(
       { sub: 3, email: 'new@user.com', role: 'USER' },
-      { expiresIn: '1d' },
+      { expiresIn: '15m' },
     );
   });
 });

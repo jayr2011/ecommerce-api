@@ -9,7 +9,7 @@ export class ProductVariantOutput {
   sku: string;
 
   @Field(() => String)
-  attrs: string; // JSON as string for simplicity
+  attrs: string;
 
   @Field()
   stock: number;
