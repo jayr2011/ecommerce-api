@@ -13,7 +13,7 @@ export class UserResolver {
   constructor(private readonly usersService: UsersService) {}
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('admin')
+  @Roles('ADMIN')
   @Query(() => [UserOutput], { name: 'allUsers' })
   async getAllUsers(): Promise<UserOutput[]> {
     const users = await this.usersService.getUsers();
@@ -27,14 +27,14 @@ export class UserResolver {
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('admin')
+  @Roles('ADMIN')
   @Query(() => UserOutput, { name: 'userById' })
   async getUserById(@Args('id') id: string): Promise<UserOutput> {
     return this.usersService.getUserById(id);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('admin')
+  @Roles('ADMIN')
   @Mutation(() => UserOutput, { name: 'updateUser' })
   async updateUser(
     @Args('id') id: string,
@@ -44,9 +44,16 @@ export class UserResolver {
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('admin')
+  @Roles('ADMIN')
   @Mutation(() => UserOutput, { name: 'deleteUser' })
   async deleteUser(@Args('input') input: DeleteUserInput): Promise<UserOutput> {
     return this.usersService.deleteUser(input.id);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  @Mutation(() => Number, { name: 'deleteAllUsers' })
+  async deleteAllUsers(): Promise<number> {
+    return this.usersService.deleteAllUsers();
   }
 }

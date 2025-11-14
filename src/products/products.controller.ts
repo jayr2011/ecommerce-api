@@ -46,19 +46,19 @@ export class ProductsController {
     return this.productsService.bySlug(slug);
   }
 
-  @Roles('admin')
+  @Roles('ADMIN')
   @Post()
   create(@Body() dto: CreateProductDto) {
     return this.productsService.create(dto);
   }
 
-  @Roles('admin')
+  @Roles('ADMIN')
   @Patch(':id')
   update(@Param('id') id: string, @Body() dto: Partial<CreateProductDto>) {
     return this.productsService.update(id, dto);
   }
 
-  @Roles('admin')
+  @Roles('ADMIN')
   @Delete(':id')
   delete(@Param('id') id: string) {
     return this.productsService.delete(id);

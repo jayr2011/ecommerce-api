@@ -28,6 +28,9 @@ export class UsersService {
 
   async getUsers(): Promise<UserDto[]> {
     const users = await this.prisma.user.findMany();
+    if (!users) {
+      throw new NotFoundException('No users found');
+    }
     return users.map((user) => this.mapUserToDto(user));
   }
 
@@ -60,5 +63,10 @@ export class UsersService {
 
     const deleted = await this.prisma.user.delete({ where: { id } });
     return this.mapUserToDto(deleted);
+  }
+
+  async deleteAllUsers(): Promise<number> {
+    const result = await this.prisma.user.deleteMany({});
+    return result.count;
   }
 }

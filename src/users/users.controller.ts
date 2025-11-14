@@ -17,28 +17,34 @@ import { RolesGuard } from 'src/common/guards/roles.guard';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Roles('admin')
+  @Roles('ADMIN')
   @Get('/allUsers')
   async getUsers(): Promise<UserDto[]> {
     return this.usersService.getUsers();
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('admin')
+  @Roles('ADMIN')
   @Get(':id')
   getUserById(@Param('id', new ParseUUIDPipe()) id: string): Promise<UserDto> {
     return this.usersService.getUserById(id);
   }
 
-  @Roles('admin')
+  @Roles('ADMIN')
   @Patch(':id')
   updateUser(@Param('id', new ParseUUIDPipe()) id: string, dto: UserUpdateDto) {
     return this.usersService.updateUser(id, dto);
   }
 
-  @Roles('admin')
+  @Roles('ADMIN')
   @Delete(':id')
   deleteUser(@Param('id') id: string) {
     return this.usersService.deleteUser(id);
+  }
+
+  @Roles('ADMIN')
+  @Delete('/coverage/deleteAllUsers')
+  deleteAllUsers() {
+    return this.usersService.deleteAllUsers();
   }
 }

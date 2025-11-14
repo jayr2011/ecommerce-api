@@ -13,7 +13,7 @@ import { getJwtSecret } from './config/jwt.config';
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({
       secret: getJwtSecret(),
-      signOptions: { expiresIn: '1h' },
+      signOptions: { expiresIn: '15m' }, // Access token: 15 minutos
     }),
     PrismaModule,
   ],

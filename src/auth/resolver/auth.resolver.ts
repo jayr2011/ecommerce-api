@@ -2,6 +2,8 @@ import { Resolver, Mutation, Args, Query } from '@nestjs/graphql';
 import { AuthService } from '../auth.service';
 import { RegisterInput } from '../inputs/register.input';
 import { LoginInput } from '../inputs/login.input';
+import { RefreshInput } from '../inputs/refresh.input';
+import { TokenOutput } from '../outputs/token.output';
 
 @Resolver()
 export class AuthResolver {
@@ -12,15 +14,18 @@ export class AuthResolver {
     return 'OK';
   }
 
-  @Mutation(() => String, { name: 'register' })
-  async register(@Args('input') input: RegisterInput) {
-    const res = await this.authService.register(input);
-    return res.access_token;
+  @Mutation(() => TokenOutput, { name: 'register' })
+  async register(@Args('input') input: RegisterInput): Promise<TokenOutput> {
+    return this.authService.register(input);
   }
 
-  @Mutation(() => String, { name: 'login' })
-  async login(@Args('input') input: LoginInput) {
-    const res = await this.authService.login(input);
-    return res.access_token;
+  @Mutation(() => TokenOutput, { name: 'login' })
+  async login(@Args('input') input: LoginInput): Promise<TokenOutput> {
+    return this.authService.login(input);
+  }
+
+  @Mutation(() => TokenOutput, { name: 'refresh' })
+  async refresh(@Args('input') input: RefreshInput): Promise<TokenOutput> {
+    return this.authService.refresh(input);
   }
 }

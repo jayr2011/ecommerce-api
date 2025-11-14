@@ -22,6 +22,10 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+input DeleteUserInput {
+  id: String!
+}
+
 input ListProductsInput {
   category: String
   q: String
@@ -36,10 +40,14 @@ input LoginInput {
 
 type Mutation {
   createProduct(input: CreateProductInput!): ProductOutput!
+  deleteAllUsers: Float!
   deleteProduct(id: String!): ProductOutput!
-  login(input: LoginInput!): String!
-  register(input: RegisterInput!): String!
+  deleteUser(input: DeleteUserInput!): UserOutput!
+  login(input: LoginInput!): TokenOutput!
+  refresh(input: RefreshInput!): TokenOutput!
+  register(input: RegisterInput!): TokenOutput!
   updateProduct(id: String!, input: UpdateProductInput!): ProductOutput!
+  updateUser(id: String!, input: UpdateUserInput!): UserOutput!
 }
 
 type ProductOutput {
@@ -65,12 +73,24 @@ type Query {
   health: String!
   productBySlug(slug: String!): ProductOutput
   products(input: ListProductsInput!): [ProductOutput!]!
+  userById(id: String!): UserOutput!
+}
+
+input RefreshInput {
+  refreshToken: String!
 }
 
 input RegisterInput {
   email: String!
   name: String!
   password: String!
+}
+
+type TokenOutput {
+  access_token: String!
+  expires_in: Float!
+  refresh_token: String!
+  token_type: String!
 }
 
 input UpdateProductInput {
@@ -80,6 +100,13 @@ input UpdateProductInput {
   priceCents: Int
   slug: String
   title: String
+}
+
+input UpdateUserInput {
+  email: String
+  name: String
+  password: String
+  role: String
 }
 
 type UserOutput {
