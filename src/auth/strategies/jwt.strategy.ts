@@ -2,13 +2,13 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { JwtPayload } from 'src/types/auth.types';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { getJwtSecret } from '../config/jwt.config';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor() {
-    const secret = process.env.JWT_SECRET;
-    if (!secret)
-      throw new Error('JWT_SECRET environment variable is not defined');
+  constructor(private readonly prisma: PrismaService) {
+    const secret = getJwtSecret();
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
@@ -16,10 +16,26 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  validate(payload: JwtPayload) {
+  async validate(payload: JwtPayload) {
     if (!payload.sub || !payload.role) {
       throw new UnauthorizedException('Invalid token payload');
     }
-    return { userId: payload.sub, role: payload.role };
+    const user = await this.prisma.user.findUnique({
+      where: { id: payload.sub },
+    });
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+
+    if (payload.role !== user.role) {
+      throw new UnauthorizedException('Invalid token payload');
+    }
+    return {
+      sub: user.id,
+      email: user.email,
+      role: user.role,
+      iat: payload.iat,
+      exp: payload.exp,
+    } satisfies JwtPayload;
   }
 }
