@@ -17,7 +17,6 @@ import { RolesGuard } from 'src/common/guards/roles.guard';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
   @Get('/allUsers')
   async getUsers(): Promise<UserDto[]> {
@@ -31,14 +30,12 @@ export class UsersController {
     return this.usersService.getUserById(id);
   }
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
   @Patch(':id')
   updateUser(@Param('id', new ParseUUIDPipe()) id: string, dto: UserUpdateDto) {
     return this.usersService.updateUser(id, dto);
   }
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')
   @Delete(':id')
   deleteUser(@Param('id') id: string) {

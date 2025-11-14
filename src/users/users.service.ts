@@ -37,7 +37,7 @@ export class UsersService {
   }
 
   async updateUser(id: string, dto: UserUpdateDto): Promise<UserDto> {
-    await this.findUserByIdOrThrow(id); // Verifica se existe
+    await this.findUserByIdOrThrow(id);
 
     const { name, email, password, role } = dto;
     const data: Prisma.UserUpdateInput = {};
