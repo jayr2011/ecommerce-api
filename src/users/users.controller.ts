@@ -15,7 +15,7 @@ import { RolesGuard } from 'src/common/guards/roles.guard';
 
 @Controller('users')
 export class UsersController {
-  constructor(private usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService) {}
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin')

@@ -18,7 +18,7 @@ import { ProductSort } from './dto/list-product.dto';
 
 @Controller('products')
 export class ProductsController {
-  constructor(private productsService: ProductsService) {}
+  constructor(private readonly productsService: ProductsService) {}
 
   @Get()
   list(

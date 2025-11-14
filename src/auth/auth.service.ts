@@ -8,8 +8,8 @@ import { JwtPayloadUser } from 'src/types/auth.types';
 @Injectable()
 export class AuthService {
   constructor(
-    private prisma: PrismaService,
-    private jwt: JwtService,
+    private readonly prisma: PrismaService,
+    private readonly jwt: JwtService,
   ) {}
 
   async register(dto: RegisterDto) {

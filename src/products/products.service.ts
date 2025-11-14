@@ -15,7 +15,7 @@ import type { Prisma, Product, Category, ProductVariant } from '@prisma/client';
 export class ProductsService {
   private readonly logger = new Logger(ProductsService.name);
 
-  constructor(private prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   private mapProductToDto(
     product: Product & {
