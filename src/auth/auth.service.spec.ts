@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
-import { UnauthorizedException } from '@nestjs/common';
+import { UnauthorizedException, ConflictException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 
 jest.mock('bcrypt', () => ({ hash: jest.fn(), compare: jest.fn() }));
@@ -78,7 +78,7 @@ describe('AuthService', () => {
         email: 'a@b.com',
         password: 'pass',
       }),
-    ).rejects.toThrow(UnauthorizedException);
+    ).rejects.toThrow(ConflictException);
   });
 
   it('register should call bcrypt.hash', async () => {
