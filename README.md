@@ -35,8 +35,14 @@ Este repositório contém a API (endpoints, autenticação JWT, modelos Prisma e
 
 - NestJS (v11)
 - TypeScript
+- GraphQL (Apollo Server + NestJS Apollo Driver)
 - Prisma (Client + Migrate)
 - PostgreSQL (via Docker Compose)
+- Authentication: Passport + JWT (com refresh tokens)
+- Hashing: bcrypt
+- Validation: class-validator + class-transformer
+- Swagger / OpenAPI (via @nestjs/swagger + swagger-ui)
+- Dev tools: SWC (via @swc/core / @swc/cli) para builds/compilação mais rápidas (dev-dependency)
 - Jest (testes)
 
 ---
@@ -83,6 +89,52 @@ npm run start:dev
 ```
 
 Agora a API deve estar disponível em http://localhost:3000 (por padrão).
+
+### Endpoints úteis
+
+- GraphQL Playground: http://localhost:3000/graphql (GraphQL está configurado com Apollo e schema automático em `src/schema.gql`)
+- Swagger / API docs: http://localhost:3000/docs
+- Prisma Studio: `npx prisma studio` (porta padrão: 5555)
+
+### Build e Run com Docker (imagem local)
+
+1) Build da imagem localmente (a partir do `Dockerfile` no root):
+
+```bash
+docker build -t ecommerce-api:latest .
+```
+
+2) Run (certifique-se de definir `DATABASE_URL` e `JWT_SECRET`):
+
+```bash
+docker run -e DATABASE_URL="postgresql://user:pass@host:5432/dbname" -e JWT_SECRET="super-secret" -p 3000:3000 ecommerce-api:latest
+```
+
+3) Exemplo de `docker-compose` (snip):
+
+```yml
+services:
+  app:
+    build: .
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      JWT_SECRET: ${JWT_SECRET}
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: ecommerce
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: example
+    volumes:
+      - db-data:/var/lib/postgresql/data
+volumes:
+  db-data:
+```
+
 
 ---
 
