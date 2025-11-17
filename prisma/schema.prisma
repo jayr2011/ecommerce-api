@@ -89,6 +89,7 @@ model CartItem {
 model Order {
   id          String      @id @default(uuid())
   userId      String?
+  productId   String?
   user        User?       @relation(fields: [userId], references: [id])
   status      OrderStatus @default(PENDING)
   totalCents  Int
