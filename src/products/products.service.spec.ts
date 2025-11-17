@@ -24,7 +24,7 @@ describe('ProductsService', () => {
     id: 'p1',
     title: 'Product 1',
     description: 'desc',
-    priceCents: 1000,
+    price: 10.0,
     active: true,
     categoryId: 'c1',
     category: { id: 'c1', name: 'Cat', slug: 'cat' },
@@ -103,7 +103,7 @@ describe('ProductsService', () => {
   });
 
   it('list applies price range filters correctly', async () => {
-    await service.list({ min: 500, max: 1500 });
+    await service.list({ min: 5, max: 15 });
     expect(mockPrisma.product.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
         where: expect.objectContaining({
@@ -143,9 +143,9 @@ describe('ProductsService', () => {
   });
 
   it('create calls prisma.product.create with dto and returns mapped DTO', async () => {
-    const dto = { title: 'New Product', slug: 'new-product', priceCents: 2000 };
-    const result = await service.create(dto);
-    expect(mockPrisma.product.create).toHaveBeenCalledWith({ data: dto });
+    const dto = { title: 'New Product', slug: 'new-product', price: 20.0 };
+    const result = await service.create(dto as any);
+    expect(mockPrisma.product.create).toHaveBeenCalledWith({ data: expect.objectContaining({ priceCents: 2000 }) });
     expect(result).toEqual(mockProductDto);
   });
 

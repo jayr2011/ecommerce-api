@@ -1,4 +1,4 @@
-import { ObjectType, Field, ID, Int } from '@nestjs/graphql';
+import { ObjectType, Field, ID, Float } from '@nestjs/graphql';
 import { CategoryOutput } from './category.output';
 import { ProductVariantOutput } from './product-variant.output';
 
@@ -13,8 +13,8 @@ export class ProductOutput {
   @Field()
   slug: string;
 
-  @Field(() => Int)
-  priceCents: number;
+  @Field(() => Float)
+  price: number;
 
   @Field({ nullable: true })
   description?: string;

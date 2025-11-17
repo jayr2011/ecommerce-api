@@ -12,7 +12,7 @@ input CreateProductInput {
   active: Boolean
   categoryId: String
   description: String
-  priceCents: Int!
+  price: Float!
   slug: String!
   title: String!
 }
@@ -55,7 +55,7 @@ type ProductOutput {
   category: CategoryOutput
   description: String
   id: ID!
-  priceCents: Int!
+  price: Float!
   slug: String!
   title: String!
   variants: [ProductVariantOutput!]
@@ -97,7 +97,7 @@ input UpdateProductInput {
   active: Boolean
   categoryId: String
   description: String
-  priceCents: Int
+  price: Float
   slug: String
   title: String
 }

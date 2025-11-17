@@ -1,6 +1,6 @@
 import {
   IsBoolean,
-  IsInt,
+  IsNumber,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -19,14 +19,14 @@ export class CreateProductDto {
   @ApiProperty({ example: 'my-product-title' })
   slug: string;
 
-  @IsInt()
+  @IsNumber()
   @Min(0)
-  @ApiProperty({ example: 2999, description: 'Preço em centavos' })
-  priceCents: number;
+  @ApiProperty({ example: 29.99, description: 'Price in BRL' })
+  price: number;
 
   @IsOptional()
   @IsString()
-  @ApiProperty({ example: 'Uma descrição opcional', required: false })
+  @ApiProperty({ example: 'An optional English description', required: false })
   description?: string;
 
   @IsOptional()

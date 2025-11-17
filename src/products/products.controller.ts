@@ -64,13 +64,13 @@ export class ProductsController {
   @ApiQuery({
     name: 'min',
     required: false,
-    description: 'Minimum price in cents',
+    description: 'Minimum price in BRL',
     type: Number,
   })
   @ApiQuery({
     name: 'max',
     required: false,
-    description: 'Maximum price in cents',
+    description: 'Maximum price in BRL',
     type: Number,
   })
   list(
@@ -88,8 +88,8 @@ export class ProductsController {
       skip: Number(skip) || 0,
       take: Number(take),
       sort: sort,
-      min: min,
-      max: max,
+      min: min != null ? Number(min) : undefined,
+      max: max != null ? Number(max) : undefined,
     });
   }
 

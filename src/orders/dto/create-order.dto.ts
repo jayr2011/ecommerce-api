@@ -1,6 +1,6 @@
 import {
   IsArray,
-  IsInt,
+  IsNumber,
   IsNotEmpty,
   IsOptional,
   IsObject,
@@ -16,7 +16,7 @@ export class CreateOrderItemDto {
   @IsUUID()
   @ApiProperty({
     example: '6a3c1b2e-4f35-11ee-be56-0242ac120002',
-    description: 'ID do produto',
+    description: 'Product ID',
   })
   productId?: string;
 
@@ -24,18 +24,18 @@ export class CreateOrderItemDto {
   @IsUUID()
   @ApiProperty({
     example: '6a3c1b2e-4f35-11ee-be56-0242ac120002',
-    description: 'ID da variante do produto',
+    description: 'Product variant ID',
   })
   variantId?: string;
 
-  @IsInt()
+  @IsNumber()
   @Min(1)
-  @ApiProperty({ example: 2, description: 'Quantidade do item' })
+  @ApiProperty({ example: 2, description: 'Item quantity' })
   qty: number;
 
-  @IsInt()
+  @IsNumber()
   @Min(0)
-  @ApiProperty({ example: 1999, description: 'Preço unitário em centavos' })
+  @ApiProperty({ example: 19.99, description: 'Unit price in BRL' })
   unitPrice: number;
 }
 
@@ -44,7 +44,7 @@ export class CreateOrderDto {
   @IsUUID()
   @ApiProperty({
     example: 'f8e4d6a8-4f35-11ee-be56-0242ac120002',
-    description: 'ID do usuário, opcional',
+    description: 'User ID (optional)',
   })
   userId?: string;
 
@@ -52,14 +52,14 @@ export class CreateOrderDto {
   @ValidateNested({ each: true })
   @Type(() => CreateOrderItemDto)
   @IsNotEmpty()
-  @ApiProperty({ type: [CreateOrderItemDto], description: 'Itens do pedido' })
+  @ApiProperty({ type: [CreateOrderItemDto], description: 'Order items' })
   items: CreateOrderItemDto[];
 
   @IsOptional()
   @IsObject()
   @ApiProperty({
-    example: { street: 'Rua Exemplo, 123' },
-    description: 'Endereço de entrega (JSON)',
+    example: { street: 'Example Street, 123' },
+    description: 'Delivery address (JSON)',
     required: false,
   })
   addressJson?: Record<string, any>;

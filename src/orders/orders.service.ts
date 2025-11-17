@@ -18,10 +18,11 @@ export class OrdersService {
           variantId = variant.id;
         }
         if (!variantId) throw new NotFoundException('VariantId not provided');
+        const unitPriceCents = Math.round(item.unitPrice * 100);
         return {
           variantId,
           qty: item.qty,
-          unitPrice: item.unitPrice,
+          unitPrice: unitPriceCents,
         };
       }),
     );
@@ -46,7 +47,13 @@ export class OrdersService {
       },
       include: { items: true },
     });
-    return order;
+    // Map back to BRL for API responses
+    const response = {
+      ...order,
+      total: Number((order.totalCents / 100).toFixed(2)),
+      items: order.items.map((i) => ({ ...i, unitPrice: Number((i.unitPrice / 100).toFixed(2)) })),
+    } as any;
+    return response;
   }
 
   async getOrderById(id: string) {
@@ -55,6 +62,10 @@ export class OrdersService {
       include: { items: true },
     });
     if (!order) throw new NotFoundException('Order not found');
-    return order;
+    return {
+      ...order,
+      total: Number((order.totalCents / 100).toFixed(2)),
+      items: order.items.map((i) => ({ ...i, unitPrice: Number((i.unitPrice / 100).toFixed(2)) })),
+    } as any;
   }
 }

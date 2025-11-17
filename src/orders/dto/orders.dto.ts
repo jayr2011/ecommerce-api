@@ -26,7 +26,7 @@ export class OrderItemDto {
   qty: number;
 
   @IsNumber()
-  @ApiProperty({ example: 1999, description: 'Unit price in cents' })
+  @ApiProperty({ example: 19.99, description: 'Unit price in BRL' })
   unitPrice: number;
 }
 
@@ -46,11 +46,11 @@ export class OrderDto {
 
   @IsNotEmpty()
   @IsNumber()
-  @ApiProperty({ example: 5999 })
-  totalCents: number;
+  @ApiProperty({ example: 59.99 })
+  total: number;
 
   @IsOptional()
-  @ApiProperty({ example: { street: 'Rua Exemplo', city: 'São Paulo' } })
+  @ApiProperty({ example: { street: 'Example Street', city: 'São Paulo' } })
   addressJson?: any;
 
   @IsArray()

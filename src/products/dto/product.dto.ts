@@ -60,8 +60,8 @@ export class ProductDto {
 
   @IsNotEmpty()
   @IsNumber()
-  @ApiProperty({ example: 2999 })
-  priceCents: number;
+  @ApiProperty({ example: 29.99 })
+  price: number;
 
   @IsNotEmpty()
   @IsBoolean()

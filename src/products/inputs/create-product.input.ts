@@ -1,7 +1,7 @@
-import { InputType, Field, Int } from '@nestjs/graphql';
+import { InputType, Field, Float } from '@nestjs/graphql';
 import {
   IsBoolean,
-  IsInt,
+  IsNumber,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -20,10 +20,10 @@ export class CreateProductInput {
   @IsNotEmpty()
   slug: string;
 
-  @Field(() => Int)
-  @IsInt()
+  @Field(() => Float)
+  @IsNumber()
   @Min(0)
-  priceCents: number;
+  price: number;
 
   @Field({ nullable: true })
   @IsOptional()

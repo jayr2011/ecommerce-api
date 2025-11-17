@@ -1,4 +1,11 @@
-import { IsEnum, IsInt, IsOptional, IsString, Min } from 'class-validator';
+import {
+  IsEnum,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Min,
+  IsInt,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -30,23 +37,23 @@ export class ListProductsQuery {
 
   @IsOptional()
   @Type(() => Number)
-  @IsInt()
+  @IsNumber()
   @Min(0)
   @ApiProperty({
     required: false,
-    example: 500,
-    description: 'Minimum price in cents',
+    example: 5.0,
+    description: 'Minimum price in BRL',
   })
   min?: number;
 
   @IsOptional()
   @Type(() => Number)
-  @IsInt()
+  @IsNumber()
   @Min(0)
   @ApiProperty({
     required: false,
-    example: 1500,
-    description: 'Maximum price in cents',
+    example: 15.0,
+    description: 'Maximum price in BRL',
   })
   max?: number;
 

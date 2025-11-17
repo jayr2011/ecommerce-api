@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateProductDto } from './dto/created-product.dto';
@@ -27,7 +29,7 @@ export class ProductsService {
       id: product.id,
       title: product.title,
       description: product.description || undefined,
-      priceCents: product.priceCents,
+      price: Number((product.priceCents / 100).toFixed(2)),
       active: product.active,
       categoryId: product.categoryId || undefined,
       category: product.category
@@ -91,8 +93,8 @@ export class ProductsService {
             }
           : {},
         category ? { category: { slug: category } } : {},
-        min != null ? { priceCents: { gte: min } } : {},
-        max != null ? { priceCents: { lte: max } } : {},
+        min != null ? { priceCents: { gte: Math.round(min * 100) } } : {},
+        max != null ? { priceCents: { lte: Math.round(max * 100) } } : {},
       ],
     };
 
@@ -131,7 +133,13 @@ export class ProductsService {
   async create(dto: CreateProductDto): Promise<ProductDto> {
     this.logger.log(`create() called — title=${dto.title}`);
 
-    const created = await this.prisma.product.create({ data: dto });
+    // Convert price in BRL -> priceCents for database storage
+    const data = {
+      ...dto,
+      priceCents: Math.round(dto.price * 100),
+    } as any;
+    delete data.price;
+    const created = await this.prisma.product.create({ data });
 
     this.logger.log(`create() success — id=${created.id}`);
     return this.mapProductToDto(created);
@@ -146,9 +154,14 @@ export class ProductsService {
       throw new NotFoundException('Product not found');
     }
 
+    const updateData = { ...dto } as any;
+    if (updateData.price != null) {
+      updateData.priceCents = Math.round(updateData.price * 100);
+      delete updateData.price;
+    }
     const updated = await this.prisma.product.update({
       where: { id },
-      data: dto,
+      data: updateData,
       include: { category: true, variants: true },
     });
     this.logger.log(`update() success — id=${updated.id}`);

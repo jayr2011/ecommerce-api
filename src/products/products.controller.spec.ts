@@ -13,7 +13,7 @@ describe('ProductsController', () => {
     id: 'p1',
     title: 'Product 1',
     description: 'desc',
-    priceCents: 1000,
+    price: 10.0,
     active: true,
     categoryId: 'c1',
     category: { id: 'c1', name: 'Cat', slug: 'cat' },
@@ -61,8 +61,8 @@ describe('ProductsController', () => {
         0,
         10,
         ProductSort.PRICE_DESC,
-        500,
-        1500,
+        5,
+        15,
       );
       expect(mockService.list).toHaveBeenCalledWith({
         q: 'search',
@@ -70,8 +70,8 @@ describe('ProductsController', () => {
         skip: 0,
         take: 10,
         sort: ProductSort.PRICE_DESC,
-        min: 500,
-        max: 1500,
+        min: 5,
+        max: 15,
       });
     });
 
@@ -121,7 +121,7 @@ describe('ProductsController', () => {
       const createDto: CreateProductDto = {
         title: 'New Product',
         slug: 'new-product',
-        priceCents: 2000,
+        price: 20.0,
       };
       await controller.create(createDto);
       expect(mockService.create).toHaveBeenCalledWith(createDto);
@@ -131,7 +131,7 @@ describe('ProductsController', () => {
       const createDto: CreateProductDto = {
         title: 'New Product',
         slug: 'new-product',
-        priceCents: 2000,
+        price: 20.0,
       };
       const result = await controller.create(createDto);
       expect(result).toEqual(mockProduct);
@@ -141,7 +141,7 @@ describe('ProductsController', () => {
       const createDto: CreateProductDto = {
         title: 'New Product',
         slug: 'new-product',
-        priceCents: 2000,
+        price: 20.0,
       };
       mockService.create.mockRejectedValueOnce(new Error('fail'));
       await expect(controller.create(createDto)).rejects.toThrow('fail');
