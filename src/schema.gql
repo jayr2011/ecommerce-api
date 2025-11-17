@@ -8,6 +8,19 @@ type CategoryOutput {
   slug: String!
 }
 
+input CreateOrderInput {
+  addressJson: JSONObject
+  items: [CreateOrderItemInput!]!
+  userId: String
+}
+
+input CreateOrderItemInput {
+  productId: String
+  qty: Float!
+  unitPrice: Float!
+  variantId: String
+}
+
 input CreateProductInput {
   active: Boolean
   categoryId: String
@@ -26,6 +39,11 @@ input DeleteUserInput {
   id: String!
 }
 
+"""
+The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSONObject
+
 input ListProductsInput {
   category: String
   q: String
@@ -39,6 +57,7 @@ input LoginInput {
 }
 
 type Mutation {
+  createOrder(input: CreateOrderInput!): OrderOutput!
   createProduct(input: CreateProductInput!): ProductOutput!
   deleteAllUsers: Float!
   deleteProduct(id: String!): ProductOutput!
@@ -48,6 +67,22 @@ type Mutation {
   register(input: RegisterInput!): TokenOutput!
   updateProduct(id: String!, input: UpdateProductInput!): ProductOutput!
   updateUser(id: String!, input: UpdateUserInput!): UserOutput!
+}
+
+type OrderItemOutput {
+  id: ID!
+  qty: Float!
+  unitPrice: Float!
+  variantId: ID!
+}
+
+type OrderOutput {
+  addressJson: JSONObject
+  createdAt: DateTime!
+  id: ID!
+  items: [OrderItemOutput!]!
+  total: Float!
+  userId: ID
 }
 
 type ProductOutput {
@@ -71,6 +106,7 @@ type ProductVariantOutput {
 type Query {
   allUsers: [UserOutput!]!
   health: String!
+  orderById(id: String!): OrderOutput
   productBySlug(slug: String!): ProductOutput
   products(input: ListProductsInput!): [ProductOutput!]!
   userById(id: String!): UserOutput!
