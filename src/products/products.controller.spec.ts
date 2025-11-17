@@ -6,6 +6,7 @@ import { ProductSort } from './dto/list-product.dto';
 
 describe('ProductsController', () => {
   let controller: ProductsController;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let productsService: ProductsService;
 
   const mockProduct = {
@@ -54,7 +55,15 @@ describe('ProductsController', () => {
 
   describe('list', () => {
     it('should call productsService.list with correct query params', async () => {
-      await controller.list('search', 'cat', 0, 10, ProductSort.PRICE_DESC, 500, 1500);
+      await controller.list(
+        'search',
+        'cat',
+        0,
+        10,
+        ProductSort.PRICE_DESC,
+        500,
+        1500,
+      );
       expect(mockService.list).toHaveBeenCalledWith({
         q: 'search',
         category: 'cat',

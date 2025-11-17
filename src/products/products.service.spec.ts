@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Test, TestingModule } from '@nestjs/testing';
 import { ProductsService } from './products.service';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -95,10 +96,7 @@ describe('ProductsService', () => {
       expect.objectContaining({
         where: {
           active: true,
-          AND: expect.arrayContaining([
-            {},
-            { category: { slug: 'cat-slug' } },
-          ]),
+          AND: expect.arrayContaining([{}, { category: { slug: 'cat-slug' } }]),
         },
       }),
     );

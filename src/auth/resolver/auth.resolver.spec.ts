@@ -3,7 +3,6 @@ import { AuthResolver } from './auth.resolver';
 import { AuthService } from '../auth.service';
 import { RegisterInput } from '../inputs/register.input';
 import { LoginInput } from '../inputs/login.input';
-import { RefreshInput } from '../inputs/refresh.input';
 
 const mockAuthService = {
   register: jest

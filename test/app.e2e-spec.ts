@@ -17,8 +17,6 @@ describe('App (e2e)', () => {
   });
 
   it('GraphQL playground should be accessible', () => {
-    return request(app.getHttpServer())
-      .get('/graphql')
-      .expect(200);
+    return request(app.getHttpServer()).get('/graphql').expect(200);
   });
 });
