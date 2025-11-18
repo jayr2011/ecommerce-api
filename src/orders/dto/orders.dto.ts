@@ -6,6 +6,7 @@ import {
   IsNumber,
   IsUUID,
 } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class OrderItemDto {
   @IsNotEmpty()
@@ -55,9 +56,11 @@ export class OrderDto {
 
   @IsArray()
   @ApiProperty({ type: [OrderItemDto] })
+  @Type(() => OrderItemDto)
   items: OrderItemDto[];
 
   @ApiProperty({ example: '2025-11-11T12:00:00.000Z' })
+  @Type(() => Date)
   createdAt: Date;
 }
 

@@ -1,6 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateOrderDto } from './dto/create-order.dto';
+import { plainToInstance } from 'class-transformer';
+import { OrderDto } from './dto/orders.dto';
 
 @Injectable()
 export class OrdersService {
@@ -47,13 +49,15 @@ export class OrdersService {
       },
       include: { items: true },
     });
-    // Map back to BRL for API responses
     const response = {
       ...order,
       total: Number((order.totalCents / 100).toFixed(2)),
-      items: order.items.map((i) => ({ ...i, unitPrice: Number((i.unitPrice / 100).toFixed(2)) })),
-    } as any;
-    return response;
+      items: order.items.map((i) => ({
+        ...i,
+        unitPrice: Number((i.unitPrice / 100).toFixed(2)),
+      })),
+    };
+    return plainToInstance(OrderDto, response);
   }
 
   async getOrderById(id: string) {
@@ -62,10 +66,29 @@ export class OrdersService {
       include: { items: true },
     });
     if (!order) throw new NotFoundException('Order not found');
-    return {
+    const mapped = {
       ...order,
       total: Number((order.totalCents / 100).toFixed(2)),
-      items: order.items.map((i) => ({ ...i, unitPrice: Number((i.unitPrice / 100).toFixed(2)) })),
-    } as any;
+      items: order.items.map((i) => ({
+        ...i,
+        unitPrice: Number((i.unitPrice / 100).toFixed(2)),
+      })),
+    };
+    return plainToInstance(OrderDto, mapped);
+  }
+
+  async getAllOrders() {
+    const orders = await this.prisma.order.findMany({
+      include: { items: true },
+    });
+    const mapped = orders.map((order) => ({
+      ...order,
+      total: Number((order.totalCents / 100).toFixed(2)),
+      items: order.items.map((i) => ({
+        ...i,
+        unitPrice: Number((i.unitPrice / 100).toFixed(2)),
+      })),
+    }));
+    return plainToInstance(OrderDto, mapped);
   }
 }

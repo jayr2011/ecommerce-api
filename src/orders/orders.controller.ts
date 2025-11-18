@@ -45,4 +45,11 @@ export class OrdersController {
   getOrderById(@Param('id') id: string): Promise<OrderDto> {
     return this.ordersService.getOrderById(id);
   }
+
+  @Get()
+  @ApiOperation({ summary: 'Get all orders' })
+  @ApiOkResponse({ type: [OrderDto] })
+  getAllOrders(): Promise<OrderDto[]> {
+    return this.ordersService.getAllOrders();
+  }
 }
