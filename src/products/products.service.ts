@@ -28,6 +28,7 @@ export class ProductsService {
     return {
       id: product.id,
       title: product.title,
+      slug: product.slug,
       description: product.description || undefined,
       price: Number((product.priceCents / 100).toFixed(2)),
       active: product.active,

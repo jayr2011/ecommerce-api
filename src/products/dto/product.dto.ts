@@ -53,6 +53,11 @@ export class ProductDto {
   @ApiProperty({ example: 'My product title' })
   title: string;
 
+  @IsNotEmpty()
+  @IsString()
+  @ApiProperty({ example: 'my-product-title' })
+  slug: string;
+
   @IsOptional()
   @IsString()
   @ApiProperty({ example: 'The product description', required: false })

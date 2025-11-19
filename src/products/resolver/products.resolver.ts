@@ -10,9 +10,10 @@ export class ProductsResolver {
   constructor(private readonly productsService: ProductsService) {}
 
   @Query(() => [ProductOutput], { name: 'products' })
-  list(@Args('input') input: ListProductsInput) {
+  async list(@Args('input') input: ListProductsInput) {
     const { q, category, skip, take } = input || {};
-    return this.productsService.list({ q, category, skip, take });
+    const result = await this.productsService.list({ q, category, skip, take });
+    return result.items;
   }
 
   @Query(() => ProductOutput, { name: 'productBySlug', nullable: true })
