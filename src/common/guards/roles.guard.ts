@@ -29,6 +29,7 @@ export class RolesGuard implements CanActivate {
     }
 
     const ctx = GqlExecutionContext.create(context);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const req = (ctx.getContext().req ||
       context.switchToHttp().getRequest<RequestWithUser>()) as RequestWithUser;
     const user = req.user;

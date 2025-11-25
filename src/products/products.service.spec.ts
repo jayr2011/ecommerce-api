@@ -144,8 +144,10 @@ describe('ProductsService', () => {
 
   it('create calls prisma.product.create with dto and returns mapped DTO', async () => {
     const dto = { title: 'New Product', slug: 'new-product', price: 20.0 };
-    const result = await service.create(dto as any);
-    expect(mockPrisma.product.create).toHaveBeenCalledWith({ data: expect.objectContaining({ priceCents: 2000 }) });
+    const result = await service.create(dto);
+    expect(mockPrisma.product.create).toHaveBeenCalledWith({
+      data: expect.objectContaining({ priceCents: 2000 }),
+    });
     expect(result).toEqual(mockProductDto);
   });
 

@@ -28,10 +28,8 @@ describe('OrdersResolver', () => {
 
   it('create should call ordersService.createOrder and return order', async () => {
     const input: CreateOrderInput = {
-      items: [
-        { qty: 1, unitPrice: 10.0, productId: 'prod-1' },
-      ],
-    } as any;
+      items: [{ qty: 1, unitPrice: 10.0, productId: 'prod-1' }],
+    };
     const mockResult = {
       id: 'order-1',
       total: 10.0,
