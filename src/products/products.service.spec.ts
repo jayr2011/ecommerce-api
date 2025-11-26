@@ -29,6 +29,7 @@ describe('ProductsService', () => {
     categoryId: 'c1',
     category: { id: 'c1', name: 'Cat', slug: 'cat' },
     variants: [{ id: 'v1', sku: 'sku1', stock: 10 }],
+    slug: 'product-1',
   };
 
   const mockPrisma = {

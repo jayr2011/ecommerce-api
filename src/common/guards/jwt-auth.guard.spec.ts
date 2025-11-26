@@ -113,6 +113,8 @@ describe('JwtAuthGuard', () => {
         .spyOn(Object.getPrototypeOf(JwtAuthGuard.prototype), 'canActivate')
         .mockReturnValue(true);
 
+      void guard.canActivate(mockExecutionContext);
+
       expect(reflector.getAllAndOverride).toHaveBeenCalledWith(IS_PUBLIC_KEY, [
         mockHandler,
         mockClass,
