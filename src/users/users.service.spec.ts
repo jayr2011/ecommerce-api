@@ -63,6 +63,42 @@ describe('UsersService', () => {
     });
   });
 
+  describe('changeRole', () => {
+    it('should call prisma.user.findUnique with correct email', async () => {
+      await service.changeRole('one@example.com', Role.ADMIN);
+      expect(mockPrisma.user.findUnique).toHaveBeenCalledWith({
+        where: { email: 'one@example.com' },
+      });
+    });
+
+    it('should throw NotFoundException when user not found', async () => {
+      mockPrisma.user.findUnique.mockResolvedValueOnce(null);
+      await expect(
+        service.changeRole('one@example.com', Role.ADMIN),
+      ).rejects.toThrow(NotFoundException);
+    });
+
+    it('should call prisma.user.update with correct data', async () => {
+      await service.changeRole('1', Role.ADMIN);
+      expect(mockPrisma.user.update).toHaveBeenCalledWith({
+        where: { id: '1' },
+        data: { role: Role.ADMIN },
+      });
+    });
+
+    it('should return updated user', async () => {
+      const result = await service.changeRole('1', Role.ADMIN);
+      expect(result).toEqual(mockUser);
+    });
+
+    it('should propagate errors from prisma', async () => {
+      mockPrisma.user.update.mockRejectedValueOnce(new Error('db-fail'));
+      await expect(service.changeRole('1', Role.ADMIN)).rejects.toThrow(
+        'db-fail',
+      );
+    });
+  });
+
   describe('getUserById', () => {
     it('should call prisma.user.findUnique with correct id', async () => {
       await service.getUserById('1');

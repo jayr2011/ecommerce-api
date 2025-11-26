@@ -2,6 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { UserDto, UserUpdateDto } from './dto/*';
+import { ChangeRoleDto } from './dto/change-role.dto';
+import { Role } from '@prisma/client';
 
 describe('UsersController', () => {
   let controller: UsersController;
@@ -21,6 +23,7 @@ describe('UsersController', () => {
     getUserById: jest.fn().mockResolvedValue(mockUser),
     updateUser: jest.fn().mockResolvedValue(mockUser),
     deleteUser: jest.fn().mockResolvedValue(mockUser),
+    changeRole: jest.fn().mockResolvedValue({ ...mockUser, role: 'ADMIN' }),
   };
 
   beforeEach(async () => {
@@ -110,6 +113,17 @@ describe('UsersController', () => {
     it('should propagate errors from service', async () => {
       mockUsersService.deleteUser.mockRejectedValueOnce(new Error('fail'));
       await expect(controller.deleteUser('1')).rejects.toThrow('fail');
+    });
+  });
+  describe('changeRole', () => {
+    it('should delegate role change to UsersService with email and role from DTO', async () => {
+      const dto: ChangeRoleDto = { email: 'one@example.com', role: Role.ADMIN };
+      const result = await controller.changeRole(dto);
+      expect(mockUsersService.changeRole).toHaveBeenCalledWith(
+        dto.email,
+        dto.role,
+      );
+      expect(result).toEqual({ ...mockUser, role: 'ADMIN' });
     });
   });
 });

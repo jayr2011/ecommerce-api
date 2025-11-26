@@ -5,6 +5,7 @@ import { UserOutput } from '../output/user.output';
 import { UpdateUserInput } from '../inputs/update-user.input';
 import { DeleteUserInput } from '../inputs/delete-user.input';
 import { Role } from '@prisma/client';
+import { ChangeRoleInput } from '../inputs/change-role.input';
 
 jest.mock('../users.service');
 
@@ -23,6 +24,8 @@ describe('UserResolver', () => {
             getUserById: jest.fn(),
             updateUser: jest.fn(),
             deleteUser: jest.fn(),
+            changeRole: jest.fn(),
+            deleteAllUsers: jest.fn(),
           },
         },
       ],
@@ -79,6 +82,26 @@ describe('UserResolver', () => {
       jest.spyOn(usersService, 'updateUser').mockResolvedValue(mockUser);
 
       const result = await resolver.updateUser('1', mockInput);
+      expect(result).toEqual(mockUser);
+    });
+  });
+
+  describe('changeRole', () => {
+    it('should change the role of a user and return the updated user', async () => {
+      const mockInput: ChangeRoleInput = {
+        email: 'john@example.com',
+        role: Role.ADMIN,
+      };
+      const mockUser: UserOutput = {
+        id: '1',
+        name: 'John Doe',
+        email: 'john@example.com',
+        role: Role.ADMIN,
+        createdAt: new Date(),
+      };
+      jest.spyOn(usersService, 'changeRole').mockResolvedValue(mockUser);
+
+      const result = await resolver.changeRole(mockInput);
       expect(result).toEqual(mockUser);
     });
   });

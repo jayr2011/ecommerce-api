@@ -7,6 +7,7 @@ import { UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/common/guards/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decoretor';
+import { ChangeRoleInput } from '../inputs/change-role.input';
 
 @Resolver()
 export class UserResolver {
@@ -31,6 +32,13 @@ export class UserResolver {
   @Query(() => UserOutput, { name: 'userById' })
   async getUserById(@Args('id') id: string): Promise<UserOutput> {
     return this.usersService.getUserById(id);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
+  @Mutation(() => UserOutput, { name: 'changeRole' })
+  async changeRole(@Args('input') input: ChangeRoleInput): Promise<UserOutput> {
+    return this.usersService.changeRole(input.email, input.role);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)

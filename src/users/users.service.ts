@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Prisma, User } from '@prisma/client';
+import { Prisma, Role, User } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserDto, UserUpdateDto } from '../users/dto/*';
 import * as bcrypt from 'bcrypt';
@@ -37,6 +37,19 @@ export class UsersService {
   async getUserById(id: string): Promise<UserDto> {
     const user = await this.findUserByIdOrThrow(id);
     return this.mapUserToDto(user);
+  }
+
+  async changeRole(email: string, role: Role): Promise<UserDto> {
+    const user = await this.prisma.user.findUnique({ where: { email } });
+    if (!user) {
+      throw new NotFoundException(`user with email ${email} not found`);
+    }
+    const updated = await this.prisma.user.update({
+      where: { id: user.id },
+      data: { role },
+    });
+
+    return this.mapUserToDto(updated);
   }
 
   async updateUser(id: string, dto: UserUpdateDto): Promise<UserDto> {

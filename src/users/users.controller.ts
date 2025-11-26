@@ -5,9 +5,11 @@ import {
   Patch,
   Delete,
   ParseUUIDPipe,
+  Body,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UserDto, UserUpdateDto } from '../users/dto/*';
+import { ChangeRoleDto } from '../users/dto/change-role.dto';
 import { Roles } from 'src/auth/decorators/roles.decoretor';
 import {
   ApiTags,
@@ -21,6 +23,7 @@ import {
   ApiBody,
 } from '@nestjs/swagger';
 import { ErrorResponseDto } from 'src/common/dto/error-response.dto';
+
 @ApiTags('Users')
 @ApiBearerAuth()
 @Controller('users')
@@ -54,6 +57,23 @@ export class UsersController {
   @Get(':id')
   getUserById(@Param('id', new ParseUUIDPipe()) id: string): Promise<UserDto> {
     return this.usersService.getUserById(id);
+  }
+
+  @Roles('ADMIN')
+  @ApiOperation({ summary: 'Change a user role' })
+  @ApiOkResponse({ description: 'Updated user role', type: UserDto })
+  @ApiBody({ type: ChangeRoleDto })
+  @ApiUnauthorizedResponse({
+    description: 'Unauthorized',
+    type: ErrorResponseDto,
+  })
+  @ApiNotFoundResponse({
+    description: 'User not found',
+    type: ErrorResponseDto,
+  })
+  @Patch('/changeRole/:email')
+  changeRole(@Body() dto: ChangeRoleDto) {
+    return this.usersService.changeRole(dto.email, dto.role);
   }
 
   @Roles('ADMIN')
