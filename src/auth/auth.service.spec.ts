@@ -104,7 +104,7 @@ describe('AuthService', () => {
     prisma.user.create.mockResolvedValue({
       id: 1,
       email: 'a@b.com',
-      role: 'ADMIN',
+      role: 'USER',
     });
     (bcrypt.hash as jest.Mock).mockResolvedValue('hashed');
     jwt.sign.mockReturnValue('token');
@@ -118,7 +118,7 @@ describe('AuthService', () => {
         name: 'A',
         email: 'a@b.com',
         passwordHash: 'hashed',
-        role: 'ADMIN',
+        role: 'USER',
       },
     });
   });
