@@ -31,13 +31,16 @@ export class CartController {
   @ApiOperation({ summary: 'Add item to user cart' })
   @ApiBody({ type: AddCartItemDto })
   @ApiResponse({ status: 201, description: 'Item added to cart' })
-  addItem(@Req() req: RequestWithUser, @Body() dto: AddCartItemDto) {
+  addItem(
+    @Req() req: RequestWithUser,
+    @Body() dto: AddCartItemDto,
+  ): Promise<AddCartItemDto[]> {
     const userId = req.user?.sub;
-    const ProductId = dto.productId;
+    const productId = dto.productId;
     if (!userId) {
       throw new NotFoundException('User not found');
     }
-    return this.cartService.addItem(userId, ProductId, dto.quantity ?? 1);
+    return this.cartService.addItem(userId, productId, dto.quantity ?? 1);
   }
 
   @Get('items')

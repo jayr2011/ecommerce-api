@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 import { Test, TestingModule } from '@nestjs/testing';
 import { CartService } from './cart.service';
 import { PrismaService } from '../prisma/prisma.service';
@@ -35,9 +37,16 @@ describe('CartService', () => {
 
     const cart = await service.addItem('UserA', 'p1', 2);
 
-    expect(mockPrisma.product.findUnique).toHaveBeenCalledWith({ where: { id: 'p1' } });
+    expect(mockPrisma.product.findUnique).toHaveBeenCalledWith({
+      where: { id: 'p1' },
+    });
     expect(cart).toHaveLength(1);
-    expect(cart[0]).toMatchObject({ productId: 'p1', quantity: 2, title: 'Product 1', price: 12.5 });
+    expect(cart[0]).toMatchObject({
+      productId: 'p1',
+      quantity: 2,
+      title: 'Product 1',
+      price: 12.5,
+    });
   });
 
   it('addItem -> increments quantity when item already in cart', async () => {
@@ -47,9 +56,7 @@ describe('CartService', () => {
       priceCents: 500,
     });
 
-    // first add
     await service.addItem('UserB', 'p2', 1);
-    // second add should increment
     const cart = await service.addItem('UserB', 'p2', 3);
 
     expect(cart).toHaveLength(1);
@@ -58,7 +65,9 @@ describe('CartService', () => {
 
   it('addItem -> throws NotFoundException when product not found', async () => {
     mockPrisma.product.findUnique.mockResolvedValue(null);
-    await expect(service.addItem('UserC', 'nope', 1)).rejects.toThrow(NotFoundException);
+    await expect(service.addItem('UserC', 'nope', 1)).rejects.toThrow(
+      NotFoundException,
+    );
   });
 
   it('getItems -> returns items previously added', async () => {
@@ -100,4 +109,3 @@ describe('CartService', () => {
     expect(service.getItems('UserF')).toEqual([]);
   });
 });
-
