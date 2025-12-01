@@ -221,5 +221,3 @@ Adicione testes para bugs/funções novas quando possível.
 Se quiser trocar ideias ou reportar algo, abra uma issue neste repositório ou me envie uma mensagem.
 
 ---
-
-README gerado automaticamente — ajuste conforme necessidades específicas do projeto.
