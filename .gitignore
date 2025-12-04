@@ -4,6 +4,7 @@
 /build
 /coverage
 /.github
+/.vscode
 
 # Logs
 logs
