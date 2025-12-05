@@ -4,6 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CartService } from './cart.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { NotFoundException } from '@nestjs/common';
+import { RedisService } from '../common/redis/redis.service';
 
 describe('CartService', () => {
   let service: CartService;
@@ -12,12 +13,18 @@ describe('CartService', () => {
       findUnique: jest.fn(),
     },
   };
+  const mockRedis: any = {
+    get: jest.fn(),
+    set: jest.fn(),
+    del: jest.fn(),
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         CartService,
         { provide: PrismaService, useValue: mockPrisma },
+        { provide: RedisService, useValue: mockRedis },
       ],
     }).compile();
 
@@ -28,7 +35,119 @@ describe('CartService', () => {
     jest.clearAllMocks();
   });
 
+  describe('getItems', () => {
+    it('returns empty array when Redis returns null', async () => {
+      mockRedis.get.mockResolvedValue(null);
+      const items = await service.getItems('user1');
+      expect(items).toEqual([]);
+    });
+
+    it('returns empty array when Redis returns empty string', async () => {
+      mockRedis.get.mockResolvedValue('');
+      const items = await service.getItems('user2');
+      expect(items).toEqual([]);
+    });
+
+    it('returns empty array when JSON.parse fails', async () => {
+      mockRedis.get.mockResolvedValue('invalid-json{');
+      const items = await service.getItems('user3');
+      expect(items).toEqual([]);
+    });
+
+    it('returns empty array when parsed JSON is not an array', async () => {
+      mockRedis.get.mockResolvedValue('{"notAnArray": true}');
+      const items = await service.getItems('user4');
+      expect(items).toEqual([]);
+    });
+
+    it('returns valid items when parse succeeds', async () => {
+      const cartData = [
+        { productId: 'p1', quantity: 2, title: 'Prod 1', price: 10.5 },
+      ];
+      mockRedis.get.mockResolvedValue(JSON.stringify(cartData));
+      const items = await service.getItems('user5');
+      expect(items).toEqual(cartData);
+    });
+  });
+
+  describe('addItem', () => {
+    it('throws NotFoundException when product does not exist', async () => {
+      mockPrisma.product.findUnique.mockResolvedValue(null);
+      await expect(service.addItem('user2', 'nope', 1)).rejects.toThrow(
+        NotFoundException,
+      );
+    });
+
+    it('adds product to cart and persists to Redis', async () => {
+      mockRedis.get.mockResolvedValue(null);
+      mockPrisma.product.findUnique.mockResolvedValue({
+        id: 'p1',
+        title: 'Product 1',
+        priceCents: 1250,
+      });
+
+      const cart = await service.addItem('user3', 'p1', 2);
+
+      expect(cart).toHaveLength(1);
+      expect(cart[0]).toMatchObject({
+        productId: 'p1',
+        quantity: 2,
+        title: 'Product 1',
+        price: 12.5,
+      });
+      expect(mockRedis.set).toHaveBeenCalledWith(
+        'cart:user3',
+        JSON.stringify(cart),
+        24 * 60 * 50,
+      );
+    });
+
+    it('increments quantity when item already exists in cart', async () => {
+      const existingCart = [
+        { productId: 'p2', quantity: 1, title: 'Product 2', price: 5.0 },
+      ];
+      mockRedis.get.mockResolvedValue(JSON.stringify(existingCart));
+      mockPrisma.product.findUnique.mockResolvedValue({
+        id: 'p2',
+        title: 'Product 2',
+        priceCents: 500,
+      });
+
+      const cart = await service.addItem('user4', 'p2', 3);
+
+      expect(cart).toHaveLength(1);
+      expect(cart[0].quantity).toBe(4);
+      expect(mockRedis.set).toHaveBeenCalled();
+    });
+  });
+
+  describe('removeItem', () => {
+    it('removes specific product and persists to Redis', async () => {
+      const existingCart = [
+        { productId: 'p1', quantity: 2, title: 'Prod 1', price: 10.0 },
+        { productId: 'p2', quantity: 1, title: 'Prod 2', price: 5.0 },
+      ];
+      mockRedis.get.mockResolvedValue(JSON.stringify(existingCart));
+
+      const cart = await service.removeItem('user5', 'p1');
+
+      expect(cart).toHaveLength(1);
+      expect(cart[0].productId).toBe('p2');
+      expect(mockRedis.set).toHaveBeenCalled();
+    });
+  });
+
+  describe('clearCart', () => {
+    it('removes Redis key', async () => {
+      const result = await service.clearCart('user6');
+
+      expect(result).toEqual([]);
+      expect(mockRedis.del).toHaveBeenCalledWith('cart:user6');
+    });
+  });
+
   it('addItem -> adds product to cart when product exists', async () => {
+    mockRedis.get.mockResolvedValue(null);
     mockPrisma.product.findUnique.mockResolvedValueOnce({
       id: 'p1',
       title: 'Product 1',
@@ -50,6 +169,7 @@ describe('CartService', () => {
   });
 
   it('addItem -> increments quantity when item already in cart', async () => {
+    mockRedis.get.mockResolvedValue(null);
     mockPrisma.product.findUnique.mockResolvedValue({
       id: 'p2',
       title: 'Product 2',
@@ -57,6 +177,12 @@ describe('CartService', () => {
     });
 
     await service.addItem('UserB', 'p2', 1);
+
+    const existingCart = [
+      { productId: 'p2', quantity: 1, title: 'Product 2', price: 5.0 },
+    ];
+    mockRedis.get.mockResolvedValue(JSON.stringify(existingCart));
+
     const cart = await service.addItem('UserB', 'p2', 3);
 
     expect(cart).toHaveLength(1);
@@ -71,41 +197,29 @@ describe('CartService', () => {
   });
 
   it('getItems -> returns items previously added', async () => {
-    mockPrisma.product.findUnique.mockResolvedValue({
-      id: 'p3',
-      title: 'Product 3',
-      priceCents: 300,
-    });
+    const cartData = [
+      { productId: 'p3', quantity: 1, title: 'Product 3', price: 3.0 },
+    ];
+    mockRedis.get.mockResolvedValue(JSON.stringify(cartData));
 
-    await service.addItem('UserD', 'p3', 1);
-    const items = service.getItems('UserD');
+    const items = await service.getItems('UserD');
     expect(items).toHaveLength(1);
     expect(items[0].productId).toBe('p3');
   });
 
   it('removeItem -> removes specific product from cart', async () => {
-    mockPrisma.product.findUnique.mockResolvedValue({
-      id: 'p4',
-      title: 'Product 4',
-      priceCents: 700,
-    });
+    const existingCart = [
+      { productId: 'p4', quantity: 2, title: 'Product 4', price: 7.0 },
+    ];
+    mockRedis.get.mockResolvedValue(JSON.stringify(existingCart));
 
-    await service.addItem('UserE', 'p4', 2);
-    const after = service.removeItem('UserE', 'p4');
+    const after = await service.removeItem('UserE', 'p4');
     expect(after).toEqual([]);
-    expect(service.getItems('UserE')).toEqual([]);
   });
 
   it('clearCart -> clears the cart', async () => {
-    mockPrisma.product.findUnique.mockResolvedValue({
-      id: 'p5',
-      title: 'Product 5',
-      priceCents: 900,
-    });
-
-    await service.addItem('UserF', 'p5', 1);
-    const cleared = service.clearCart('UserF');
+    const cleared = await service.clearCart('UserF');
     expect(cleared).toEqual([]);
-    expect(service.getItems('UserF')).toEqual([]);
+    expect(mockRedis.del).toHaveBeenCalledWith('cart:userf');
   });
 });

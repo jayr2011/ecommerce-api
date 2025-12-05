@@ -26,26 +26,26 @@ export class CartResolver {
   }
 
   @Query(() => [CartItemOutput], { name: 'cartItems' })
-  getCartItems(@Context() ctx: GqlContext): CartItemOutput[] {
+  async getCartItems(@Context() ctx: GqlContext): Promise<CartItemOutput[]> {
     const userId = ctx.req.user?.sub;
     if (!userId) throw new NotFoundException('User not found');
-    return this.cartService.getItems(userId);
+    return await this.cartService.getItems(userId);
   }
 
   @Mutation(() => [CartItemOutput], { name: 'removeCartItem' })
-  removeCartItem(
+  async removeCartItem(
     @Args('productId') productId: string,
     @Context() ctx: GqlContext,
-  ): CartItemOutput[] {
+  ): Promise<CartItemOutput[]> {
     const userId = ctx.req.user?.sub;
     if (!userId) throw new NotFoundException('User not found');
-    return this.cartService.removeItem(userId, productId);
+    return await this.cartService.removeItem(userId, productId);
   }
 
   @Mutation(() => [CartItemOutput], { name: 'clearCart' })
-  clearCart(@Context() ctx: GqlContext): CartItemOutput[] {
+  async clearCart(@Context() ctx: GqlContext): Promise<CartItemOutput[]> {
     const userId = ctx.req.user?.sub;
     if (!userId) throw new NotFoundException('User not found');
-    return this.cartService.clearCart(userId);
+    return await this.cartService.clearCart(userId);
   }
 }

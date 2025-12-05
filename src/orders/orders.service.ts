@@ -77,7 +77,7 @@ export class OrdersService {
     return plainToInstance(OrderDto, mapped);
   }
 
-  async getAllOrders() {
+  async getAllOrders(): Promise<OrderDto[]> {
     const orders = await this.prisma.order.findMany({
       include: { items: true },
     });
@@ -89,6 +89,6 @@ export class OrdersService {
         unitPrice: Number((i.unitPrice / 100).toFixed(2)),
       })),
     }));
-    return plainToInstance(OrderDto, mapped);
+    return plainToInstance(OrderDto, mapped) as unknown as OrderDto[];
   }
 }
