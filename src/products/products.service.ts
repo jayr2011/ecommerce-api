@@ -99,93 +99,112 @@ export class ProductsService {
       ],
     };
 
-    const [items, total] = await this.prisma.$transaction([
-      this.prisma.product.findMany({
-        where,
-        orderBy,
+    try {
+      const [items, total] = await this.prisma.$transaction([
+        this.prisma.product.findMany({
+          where,
+          orderBy,
+          skip,
+          take,
+          include: { category: true, variants: true },
+        }),
+        this.prisma.product.count({ where }),
+      ]);
+
+      this.logger.log(`list() returned ${items.length} items (total=${total})`);
+
+      return {
+        items: items.map((item) => this.mapProductToDto(item)),
+        total,
         skip,
         take,
-        include: { category: true, variants: true },
-      }),
-      this.prisma.product.count({ where }),
-    ]);
-
-    this.logger.log(`list() returned ${items.length} items (total=${total})`);
-
-    return {
-      items: items.map((item) => this.mapProductToDto(item)),
-      total,
-      skip,
-      take,
-    };
+      };
+    } catch (error) {
+      this.logger.error(`Error in list()`, error as Error);
+      throw error;
+    }
   }
 
   async bySlug(slug: string): Promise<ProductDto | null> {
     this.logger.log(`bySlug() called — slug=${slug}`);
-
-    const product = await this.prisma.product.findUnique({
-      where: { slug },
-      include: { variants: true, category: true },
-    });
-
-    return product ? this.mapProductToDto(product) : null;
+    try {
+      const product = await this.prisma.product.findUnique({
+        where: { slug },
+        include: { variants: true, category: true },
+      });
+      return product ? this.mapProductToDto(product) : null;
+    } catch (error) {
+      this.logger.error(`Error in bySlug() for slug=${slug}`, error as Error);
+      throw error;
+    }
   }
 
   async create(dto: CreateProductDto): Promise<ProductDto> {
     this.logger.log(`create() called — title=${dto.title}`);
+    try {
+      const data = {
+        ...dto,
+        priceCents: Math.round(dto.price * 100),
+      } as any;
+      delete data.price;
+      const created = await this.prisma.product.create({ data });
 
-    // Convert price in BRL -> priceCents for database storage
-    const data = {
-      ...dto,
-      priceCents: Math.round(dto.price * 100),
-    } as any;
-    delete data.price;
-    const created = await this.prisma.product.create({ data });
-
-    this.logger.log(`create() success — id=${created.id}`);
-    return this.mapProductToDto(created);
+      this.logger.log(`create() success — id=${created.id}`);
+      return this.mapProductToDto(created);
+    } catch (error) {
+      this.logger.error(`Error in create() title=${dto.title}`, error as Error);
+      throw error;
+    }
   }
 
   async update(id: string, dto: UpdateProductDto): Promise<ProductDto> {
     this.logger.log(`update() called — id=${id}`);
+    try {
+      const exists = await this.prisma.product.findUnique({ where: { id } });
+      if (!exists) {
+        this.logger.warn(`update() failed — product not found id=${id}`);
+        throw new NotFoundException('Product not found');
+      }
 
-    const exists = await this.prisma.product.findUnique({ where: { id } });
-    if (!exists) {
-      this.logger.warn(`update() failed — product not found id=${id}`);
-      throw new NotFoundException('Product not found');
+      const updateData = { ...dto } as any;
+      if (updateData.price != null) {
+        updateData.priceCents = Math.round(updateData.price * 100);
+        delete updateData.price;
+      }
+      const updated = await this.prisma.product.update({
+        where: { id },
+        data: updateData,
+        include: { category: true, variants: true },
+      });
+      this.logger.log(`update() success — id=${updated.id}`);
+      return this.mapProductToDto(updated);
+    } catch (error) {
+      this.logger.error(`Error in update() id=${id}`, error as Error);
+      throw error;
     }
-
-    const updateData = { ...dto } as any;
-    if (updateData.price != null) {
-      updateData.priceCents = Math.round(updateData.price * 100);
-      delete updateData.price;
-    }
-    const updated = await this.prisma.product.update({
-      where: { id },
-      data: updateData,
-      include: { category: true, variants: true },
-    });
-    this.logger.log(`update() success — id=${updated.id}`);
-    return this.mapProductToDto(updated);
   }
 
   async delete(id: string): Promise<ProductDto> {
     this.logger.log(`delete() called — id=${id}`);
+    try {
+      const exists = await this.prisma.product.findUnique({
+        where: { id },
+        include: { category: true, variants: true },
+      });
+      if (!exists) {
+        throw new NotFoundException('Product not found');
+      }
 
-    const exists = await this.prisma.product.findUnique({
-      where: { id },
-      include: { category: true, variants: true },
-    });
-    if (!exists) {
-      throw new NotFoundException('Product not found');
+      const deleted = await this.prisma.product.delete({ where: { id } });
+      this.logger.log(`delete() success — id=${deleted.id}`);
+      return this.mapProductToDto({
+        ...deleted,
+        category: exists.category,
+        variants: exists.variants,
+      });
+    } catch (error) {
+      this.logger.error(`Error in delete() id=${id}`, error as Error);
+      throw error;
     }
-
-    const deleted = await this.prisma.product.delete({ where: { id } });
-    this.logger.log(`delete() success — id=${deleted.id}`);
-    return this.mapProductToDto({
-      ...deleted,
-      category: exists.category,
-      variants: exists.variants,
-    });
   }
 }

@@ -2,10 +2,27 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+input AddCartItemInput {
+  productId: String!
+  quantity: Int
+}
+
+type CartItemOutput {
+  price: Float
+  productId: String!
+  quantity: Int!
+  title: String
+}
+
 type CategoryOutput {
   id: ID!
   name: String!
   slug: String!
+}
+
+input ChangeRoleInput {
+  email: String!
+  role: Role!
 }
 
 input CreateOrderInput {
@@ -57,6 +74,9 @@ input LoginInput {
 }
 
 type Mutation {
+  addCartItem(input: AddCartItemInput!): [CartItemOutput!]!
+  changeRole(input: ChangeRoleInput!): UserOutput!
+  clearCart: [CartItemOutput!]!
   createOrder(input: CreateOrderInput!): OrderOutput!
   createProduct(input: CreateProductInput!): ProductOutput!
   deleteAllUsers: Float!
@@ -65,6 +85,7 @@ type Mutation {
   login(input: LoginInput!): TokenOutput!
   refresh(input: RefreshInput!): TokenOutput!
   register(input: RegisterInput!): TokenOutput!
+  removeCartItem(productId: String!): [CartItemOutput!]!
   updateProduct(id: String!, input: UpdateProductInput!): ProductOutput!
   updateUser(id: String!, input: UpdateUserInput!): UserOutput!
 }
@@ -105,6 +126,7 @@ type ProductVariantOutput {
 
 type Query {
   allUsers: [UserOutput!]!
+  cartItems: [CartItemOutput!]!
   health: String!
   orderById(id: String!): OrderOutput
   productBySlug(slug: String!): ProductOutput
@@ -120,6 +142,11 @@ input RegisterInput {
   email: String!
   name: String!
   password: String!
+}
+
+enum Role {
+  ADMIN
+  USER
 }
 
 type TokenOutput {
