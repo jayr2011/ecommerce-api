@@ -90,7 +90,10 @@ export class UsersController {
   })
   @ApiBody({ type: UserUpdateDto })
   @Patch(':id')
-  updateUser(@Param('id', new ParseUUIDPipe()) id: string, dto: UserUpdateDto) {
+  updateUser(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() dto: UserUpdateDto,
+  ) {
     return this.usersService.updateUser(id, dto);
   }
 
