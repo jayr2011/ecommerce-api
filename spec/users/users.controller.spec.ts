@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { UsersController } from './users.controller';
-import { UsersService } from './users.service';
-import { UserDto, UserUpdateDto } from './dto/*';
-import { ChangeRoleDto } from './dto/change-role.dto';
+import { UsersController } from '../../src/users/users.controller';
+import { UsersService } from '../../src/users/users.service';
+import { UserDto, UserUpdateDto } from '../../src/users/dto/*';
+import { ChangeRoleDto } from '../../src/users/dto/change-role.dto';
 import { Role } from '@prisma/client';
 
 describe('UsersController', () => {

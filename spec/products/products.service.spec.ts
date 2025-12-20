@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Test, TestingModule } from '@nestjs/testing';
-import { ProductsService } from './products.service';
+import { ProductsService } from '../../src/products/products.service';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { ProductDto } from './dto/product.dto';
-import { ProductSort } from './dto/list-product.dto';
+import { ProductDto } from '../../src/products/dto/product.dto';
+import { ProductSort } from '../../src/products/dto/list-product.dto';
 
 describe('ProductsService', () => {
   let service: ProductsService;

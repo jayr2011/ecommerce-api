@@ -1,4 +1,7 @@
-import { IS_PUBLIC_KEY, Public } from './public.decorator';
+import {
+  IS_PUBLIC_KEY,
+  Public,
+} from '../../../src/auth/decorators/public.decorator';
 
 describe('Public Decorator', () => {
   it('should set IS_PUBLIC_KEY metadata to true', () => {

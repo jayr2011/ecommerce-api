@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { OrdersService } from './orders.service';
+import { OrdersService } from '../../src/orders/orders.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 describe('OrdersService', () => {

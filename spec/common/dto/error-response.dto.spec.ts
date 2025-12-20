@@ -1,4 +1,4 @@
-import { ErrorResponseDto } from './error-response.dto';
+import { ErrorResponseDto } from '../../../src/common/dto/error-response.dto';
 
 describe('ErrorResponseDto', () => {
   it('should create an instance with correct properties', () => {

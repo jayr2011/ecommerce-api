@@ -1,4 +1,4 @@
-import { Roles, ROLES_KEY } from './roles.decoretor';
+import { Roles, ROLES_KEY } from '../../../src/auth/decorators/roles.decoretor';
 
 describe('Roles Decorator', () => {
   it('should set ROLES_KEY metadata with provided roles', () => {

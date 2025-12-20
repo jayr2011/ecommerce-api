@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { OrdersResolver } from './orders.resolver';
-import { OrdersService } from '../orders.service';
-import { CreateOrderInput } from '../inputs/create-order.input';
+import { OrdersResolver } from '../../../src/orders/resolver/orders.resolver';
+import { OrdersService } from '../../../src/orders/orders.service';
+import { CreateOrderInput } from '../../../src/orders/inputs/create-order.input';
 
 const mockOrdersService = {
   createOrder: jest.fn(),

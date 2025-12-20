@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UnauthorizedException } from '@nestjs/common';
-import { JwtStrategy } from './jwt.strategy';
+import { JwtStrategy } from '../../../src/auth/strategies/jwt.strategy';
 import { JwtPayload } from 'src/types/auth.types';
 import { PrismaService } from 'src/prisma/prisma.service';
 

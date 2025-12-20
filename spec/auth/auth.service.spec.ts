@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { AuthService } from './auth.service';
+import { AuthService } from '../../src/auth/auth.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { UnauthorizedException, ConflictException } from '@nestjs/common';
@@ -118,7 +118,7 @@ describe('AuthService', () => {
         name: 'A',
         email: 'a@b.com',
         passwordHash: 'hashed',
-        role: 'USER',
+        role: 'ADMIN',
       },
     });
   });

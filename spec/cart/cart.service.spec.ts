@@ -1,10 +1,11 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 import { Test, TestingModule } from '@nestjs/testing';
-import { CartService } from './cart.service';
-import { PrismaService } from '../prisma/prisma.service';
+import { CartService } from '../../src/cart/cart.service';
+import { PrismaService } from '../../src/prisma/prisma.service';
 import { NotFoundException } from '@nestjs/common';
-import { RedisService } from '../common/redis/redis.service';
+import { RedisService } from '../../src/common/redis/redis.service';
 
 describe('CartService', () => {
   let service: CartService;
@@ -29,6 +30,9 @@ describe('CartService', () => {
     }).compile();
 
     service = module.get<CartService>(CartService);
+    // Silenciar logs durante os testes
+    jest.spyOn(service['logger'], 'error').mockImplementation();
+    jest.spyOn(service['logger'], 'debug').mockImplementation();
   });
 
   afterEach(() => {

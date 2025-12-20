@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Test, TestingModule } from '@nestjs/testing';
-import { CartController } from './cart.controller';
-import { CartService } from './cart.service';
-import { AddCartItemDto } from './dto/addCartItem.dto';
+import { CartController } from '../../src/cart/cart.controller';
+import { CartService } from '../../src/cart/cart.service';
+import { AddCartItemDto } from '../../src/cart/dto/addCartItem.dto';
 import { NotFoundException } from '@nestjs/common';
 import { RequestWithUser } from 'src/types/auth.types';
 

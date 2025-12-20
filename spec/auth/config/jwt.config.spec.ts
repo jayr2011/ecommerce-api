@@ -1,4 +1,4 @@
-import { getJwtSecret } from './jwt.config';
+import { getJwtSecret } from '../../../src/auth/config/jwt.config';
 
 describe('getJwtSecret', () => {
   const originalEnv = process.env;

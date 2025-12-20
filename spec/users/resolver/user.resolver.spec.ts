@@ -1,13 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserResolver } from './user.resolver';
-import { UsersService } from '../users.service';
-import { UserOutput } from '../output/user.output';
-import { UpdateUserInput } from '../inputs/update-user.input';
-import { DeleteUserInput } from '../inputs/delete-user.input';
+import { UserResolver } from '../../../src/users/resolver/user.resolver';
+import { UsersService } from '../../../src/users/users.service';
+import { UserOutput } from '../../../src/users/output/user.output';
+import { UpdateUserInput } from '../../../src/users/inputs/update-user.input';
+import { DeleteUserInput } from '../../../src/users/inputs/delete-user.input';
 import { Role } from '@prisma/client';
-import { ChangeRoleInput } from '../inputs/change-role.input';
+import { ChangeRoleInput } from '../../../src/users/inputs/change-role.input';
 
-jest.mock('../users.service');
+jest.mock('../../../src/users/users.service');
 
 describe('UserResolver', () => {
   let resolver: UserResolver;

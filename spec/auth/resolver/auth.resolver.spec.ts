@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { AuthResolver } from './auth.resolver';
-import { AuthService } from '../auth.service';
-import { RegisterInput } from '../inputs/register.input';
-import { LoginInput } from '../inputs/login.input';
+import { AuthResolver } from '../../../src/auth/resolver/auth.resolver';
+import { AuthService } from '../../../src/auth/auth.service';
+import { RegisterInput } from '../../../src/auth/inputs/register.input';
+import { LoginInput } from '../../../src/auth/inputs/login.input';
 
 const mockAuthService = {
   register: jest

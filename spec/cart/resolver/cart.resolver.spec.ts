@@ -1,8 +1,8 @@
-import { CartResolver } from './cart.resolver';
-import { CartService } from '../cart.service';
-import { AddCartItemInput } from '../inputs/add-cart-item.input';
-import { CartItem, GqlContext } from '../types/cartItem.types';
-import { RequestWithUser } from 'src/types/auth.types';
+import { CartResolver } from '../../../src/cart/resolver/cart.resolver';
+import { CartService } from '../../../src/cart/cart.service';
+import { AddCartItemInput } from '../../../src/cart/inputs/add-cart-item.input';
+import { CartItem, GqlContext } from '../../../src/cart/types/cartItem.types';
+import { RequestWithUser } from '../../../src/types/auth.types';
 
 describe('CartResolver', () => {
   let resolver: CartResolver;
@@ -71,34 +71,38 @@ describe('CartResolver', () => {
     expect(cartService.addItem).not.toHaveBeenCalled();
   });
 
-  it('returns items from getCartItems', () => {
+  it('returns items from getCartItems', async () => {
     const mockCart: CartItem[] = [
       { productId: 'p1', quantity: 3, title: 'T1', price: 10 },
     ];
-    cartService.getItems.mockReturnValue(mockCart);
+    cartService.getItems.mockResolvedValue(mockCart);
 
-    expect(resolver.getCartItems(userReq)).toEqual(mockCart);
+    await expect(resolver.getCartItems(userReq)).resolves.toEqual(mockCart);
     expect(cartService.getItems).toHaveBeenCalledWith('user-1');
   });
 
-  it('throws when user missing on getCartItems', () => {
+  it('throws when user missing on getCartItems', async () => {
     const badCtx2: GqlContext = { req: {} as RequestWithUser };
-    expect(() => resolver.getCartItems(badCtx2)).toThrow('User not found');
+    await expect(resolver.getCartItems(badCtx2)).rejects.toThrow(
+      'User not found',
+    );
   });
 
-  it('removeCartItem calls service and returns result', () => {
+  it('removeCartItem calls service and returns result', async () => {
     const mockCart: CartItem[] = [];
-    cartService.removeItem.mockReturnValue(mockCart);
+    cartService.removeItem.mockResolvedValue(mockCart);
 
-    expect(resolver.removeCartItem('p1', userReq)).toEqual(mockCart);
+    await expect(resolver.removeCartItem('p1', userReq)).resolves.toEqual(
+      mockCart,
+    );
     expect(cartService.removeItem).toHaveBeenCalledWith('user-1', 'p1');
   });
 
-  it('clearCart calls service and returns result', () => {
+  it('clearCart calls service and returns result', async () => {
     const mockCart: CartItem[] = [];
-    cartService.clearCart.mockReturnValue(mockCart);
+    cartService.clearCart.mockResolvedValue(mockCart);
 
-    expect(resolver.clearCart(userReq)).toEqual(mockCart);
+    await expect(resolver.clearCart(userReq)).resolves.toEqual(mockCart);
     expect(cartService.clearCart).toHaveBeenCalledWith('user-1');
   });
 });
